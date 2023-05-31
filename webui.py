@@ -15,6 +15,19 @@ from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from packaging import version
+#customs
+from transformers import AutoTokenizer, AutoModel
+
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+model = AutoModel.from_pretrained("bert-base-uncased")
+model = model.to("cuda")
+
+input_text = "Sample input text"
+encoded_input = tokenizer(input_text, return_tensors="pt")
+encoded_input = encoded_input.to("cuda")
+
+output = model(**encoded_input)
+#customs
 
 import logging
 
@@ -25,6 +38,10 @@ from modules import paths, timer, import_hook, errors  # noqa: F401
 startup_timer = timer.Timer()
 
 import torch
+#customs
+print(torch.cuda.is_available())
+print(torch.cuda.get_device_name(0))
+#customs
 import pytorch_lightning   # noqa: F401 # pytorch_lightning should be imported after torch, but it re-enables warnings on import so import once to disable them
 warnings.filterwarnings(action="ignore", category=DeprecationWarning, module="pytorch_lightning")
 warnings.filterwarnings(action="ignore", category=UserWarning, module="torchvision")
